@@ -1,10 +1,7 @@
+// Task.swift
 //
-//  Task.swift
-// 
+// Created by Artem Vekshin on 11.11.2024.
 //
-//  Created by Artem Vekshin on 11.11.2024.
-//
-
 
 import Foundation
 import SwiftUI
@@ -20,12 +17,20 @@ struct Task: Identifiable {
     var importance: TaskImportance
     var startTime: Date?
     var endTime: Date?
-    
+
     var urgencyColor: Color {
         switch importance {
         case .high: return .red
         case .medium: return .yellow
         case .low: return .green
+        }
+    }
+
+    var difficultyColor: Color {
+        switch difficulty {
+        case .easy: return .green
+        case .medium: return .yellow
+        case .hard: return .red
         }
     }
 }

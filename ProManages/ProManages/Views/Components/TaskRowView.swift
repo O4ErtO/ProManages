@@ -1,11 +1,8 @@
+// TaskRowView.swift
 //
-//  TaskRowView.swift
-//  ProManages
-//
-//  Created by Artem Vekshin on 18.11.2024.
+// Created by Artem Vekshin on 18.11.2024.
 //
 
-import Foundation
 import SwiftUI
 
 struct TaskRowView: View {
@@ -13,25 +10,54 @@ struct TaskRowView: View {
 
     var body: some View {
         HStack {
+            // Urgency indicator circle
             Circle()
                 .fill(task.urgencyColor)
-                .frame(width: 10, height: 10)
-            VStack(alignment: .leading) {
+                .frame(width: 16, height: 16)
+                .padding(.trailing, 10)
+
+            VStack(alignment: .leading, spacing: 4) {
+                // Title of the task with bold and larger font
                 Text(task.title)
                     .font(.headline)
-                Text("Описание: \(task.description)")
+                    .fontWeight(.bold)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+
+                // Description of the task with smaller font
+                Text(task.description)
                     .font(.subheadline)
-                Text("Тип: \(task.type.rawValue)")
-                    .font(.subheadline)
-                Text("Сложность: \(task.difficulty.rawValue)")
-                    .font(.subheadline)
-                Text("Срочность: \(task.importance.rawValue)")
-                    .font(.subheadline)
-                Text("Проект: \(task.project!.title)")
-                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+                    .padding(.vertical, 2)
+
+                HStack(spacing: 8) {
+                    // Type of task
+                    TaskAttributeView(title: "Тип", value: task.type.rawValue, color: nil)
+
+                    // Difficulty of the task
+                    TaskAttributeView(title: "Сложность", value: task.difficulty.rawValue, color: task.difficultyColor)
+
+                    // Urgency level of the task
+                    TaskAttributeView(title: "Срочность", value: task.importance.rawValue, color: task.urgencyColor)
+
+                    // Project name associated with the task
+                    if let project = task.project {
+                        TaskAttributeView(title: "Проект", value: project.title, color: nil)
+                    }
+                }
+                .font(.caption)
+                .foregroundColor(.secondary)
             }
+            .padding(.vertical, 8)
+
             Spacer()
         }
-        .padding(.vertical, 5)
+        .padding(.horizontal, 16)
+        .gradientBackground()
+        .cornerRadius(20)
+        .padding(.vertical, 4)
     }
 }
+
+

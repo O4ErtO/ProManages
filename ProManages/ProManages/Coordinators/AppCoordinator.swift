@@ -6,17 +6,26 @@
 //
 
 import Foundation
-import SwiftUI
 
-class AppCoordinator: ObservableObject {
-    @Published var selectedProject: Project?
-    @Published var selectedTask: Task?
-    
-    func selectProject(_ project: Project) {
-        selectedProject = project
+enum Route {
+    case showTask(Project)
+    case taskDetails(Task)
+    case statistic
+}
+
+class AppState: ObservableObject {
+    @Published var routes: [Route] = []
+
+    var currentRoute: Route? {
+        routes.last
     }
-    
-    func selectTask(_ task: Task) {
-        selectedTask = task
+
+    func push(_ route: Route) {
+        routes.append(route)
+    }
+
+    @discardableResult
+    func pop() -> Route? {
+        routes.popLast()
     }
 }

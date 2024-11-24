@@ -1,6 +1,5 @@
 //
 //  TaskListView.swift
-//  
 //
 //  Created by Artem Vekshin on 11.11.2024.
 //
@@ -9,28 +8,34 @@ import SwiftUI
 
 struct TaskListView: View {
     @StateObject var taskViewModel = TaskViewModel()
-    @StateObject var authViewModel = AuthViewModel()
+    @EnvironmentObject private var appState: AppState
+    let project: Project
+    @State private var showingCreateTaskSheet = false
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(taskViewModel.tasks) { task in
-                    TaskRowView(task: task)
+        List(taskViewModel.tasks) { task in
+            TaskRowView(task: task)
+                .onTapGesture {
+                    appState.push(.taskDetails(task))
                 }
-            }
-            .frame(minWidth: 600, minHeight: 400)
-            .toolbar {
-                if authViewModel.user?.role == .admin {
-                    ToolbarItem {
-                        Button(action: {
-                             print("Создать задачу")
-                        }) {
-                            Label("Создать задачу", systemImage: "plus")
-                        }
-                    }
+        }
+        .scrollContentBackground(.hidden)
+        .gradientBackground()
+        .navigationTitle(project.title)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button(action: {
+                    showingCreateTaskSheet = true
+                }) {
+                    Label("Создать задачу", systemImage: "plus")
                 }
             }
         }
+        .sheet(isPresented: $showingCreateTaskSheet) {
+            CreateTaskView()
+                .environmentObject(taskViewModel)
+        }
+        .gradientBackground()
     }
 }
 

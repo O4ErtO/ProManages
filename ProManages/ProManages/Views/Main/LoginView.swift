@@ -9,49 +9,64 @@
 import SwiftUI
 
 struct LoginView: View {
-    @State private var username: String = ""
-    @State private var password: String = ""
     @EnvironmentObject var authViewModel: AuthViewModel
     @State private var showError: Bool = false
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Вход")
-                .font(.largeTitle)
-                .padding(.bottom, 40)
-            
-            TextField("Имя пользователя", text: $username)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal, 20)
+        ZStack {
+            LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.7), Color.purple.opacity(0.7)]),
+                           startPoint: .topLeading,
+                           endPoint: .bottomTrailing)
+                .edgesIgnoringSafeArea(.all)
 
-            SecureField("Пароль", text: $password)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal, 20)
-            
-            Button(action: {
-                if !authViewModel.login(username: username, password: password) {
-                    showError = true
-                }
-            }) {
-                Text("Войти")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
+            VStack(spacing: 25) {
+                Text("Добро пожаловать!")
+                    .font(.system(size: 36, weight: .bold))
                     .foregroundColor(.white)
-                    .cornerRadius(8)
+                    .shadow(radius: 10)
+                
+                TextField("", text: $authViewModel.login)
+                    .placeholder("Имя пользователя", when: authViewModel.login.isEmpty)
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.white.opacity(0.8)))
+                    .shadow(radius: 5)
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 30)
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .disableAutocorrection(true)
+                
+                SecureField("", text: $authViewModel.password)
+                    .placeholder("Пароль", when: authViewModel.password.isEmpty)
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.white.opacity(0.8)))
+                    .shadow(radius: 5)
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 30)
+                    .textFieldStyle(PlainTextFieldStyle())
+                    .disableAutocorrection(true)
+                
+                GradientButton(action: {
+                    if !authViewModel.performLogin() {
+                        showError = true
+                    }
+                }, title: "Вход")
+                
+                .padding(.horizontal, 30)
+                
+                Button(action: {
+                    // Логика для регистрации
+                }) {
+                    Text("Нет аккаунта? Зарегистрируйтесь")
+                        .foregroundColor(.white)
+                }
             }
-            .padding(.horizontal, 20)
-            .alert(isPresented: $showError) {
-                Alert(title: Text("Ошибка"), message: Text("Неверное имя пользователя или пароль"), dismissButton: .default(Text("Ок")))
-            }
-
-            Button(action: {
-                // Логика для перехода на регистрацию
-            }) {
-                Text("Регистрация")
-            }
-            .padding(.top, 10)
+            .padding()
         }
-        .padding()
+        .alert(isPresented: $showError) {
+            Alert(title: Text("Ошибка"), message: Text("Неверное имя пользователя или пароль"), dismissButton: .default(Text("Ок")))
+        }
     }
 }
+
