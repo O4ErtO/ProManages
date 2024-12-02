@@ -7,12 +7,25 @@
 
 import Foundation
 
-enum Role {
-    case admin
-    case worker
+struct User: Codable, Identifiable, Hashable, Equatable {
+    var id: String
+    var email: String
+    var username: String
+    var role: Role
+
+    static func == (lhs: User, rhs: User) -> Bool {
+        return lhs.id == rhs.id && lhs.email == rhs.email && lhs.username == rhs.username && lhs.role == rhs.role
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(email)
+        hasher.combine(username)
+        hasher.combine(role)
+    }
 }
 
-struct User: Equatable {
-    let username: String
-    let role: Role
+enum Role: String, Codable {
+    case admin
+    case worker
 }

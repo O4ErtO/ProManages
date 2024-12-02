@@ -11,6 +11,7 @@ import SwiftUI
 struct LoginView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @State private var showError: Bool = false
+    @State private var showSheet: Bool = false
 
     var body: some View {
         ZStack {
@@ -24,7 +25,7 @@ struct LoginView: View {
                     .font(.system(size: 36, weight: .bold))
                     .foregroundColor(.white)
                     .shadow(radius: 10)
-                
+
                 TextField("", text: $authViewModel.login)
                     .placeholder("Имя пользователя", when: authViewModel.login.isEmpty)
                     .padding()
@@ -35,7 +36,7 @@ struct LoginView: View {
                     .padding(.horizontal, 30)
                     .textFieldStyle(PlainTextFieldStyle())
                     .disableAutocorrection(true)
-                
+
                 SecureField("", text: $authViewModel.password)
                     .placeholder("Пароль", when: authViewModel.password.isEmpty)
                     .padding()
@@ -46,27 +47,42 @@ struct LoginView: View {
                     .padding(.horizontal, 30)
                     .textFieldStyle(PlainTextFieldStyle())
                     .disableAutocorrection(true)
-                
-                GradientButton(action: {
-                    if !authViewModel.performLogin() {
-                        showError = true
-                    }
-                }, title: "Вход")
-                
+
+                GradientButton(
+                    action: loginAction,  
+                    title: "Вход"
+                )
                 .padding(.horizontal, 30)
-                
+
                 Button(action: {
-                    // Логика для регистрации
+                    showSheet.toggle()
                 }) {
                     Text("Нет аккаунта? Зарегистрируйтесь")
                         .foregroundColor(.white)
                 }
+                .buttonStyle(.plain)
             }
             .padding()
+        }
+        .sheet(isPresented: $showSheet) {
+            RegistrationView(viewModel: RegistrationViewModel())
         }
         .alert(isPresented: $showError) {
             Alert(title: Text("Ошибка"), message: Text("Неверное имя пользователя или пароль"), dismissButton: .default(Text("Ок")))
         }
     }
-}
 
+    func loginAction() {
+        Task {
+            do {
+                let success = try await authViewModel.performLogin() // Добавляем try для обработки ошибок
+                if !success {
+                    showError = true
+                }
+            } catch {
+                showError = true
+            }
+        }
+    }
+
+}

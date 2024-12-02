@@ -14,9 +14,12 @@ struct TaskAttributeView: View {
 
     var body: some View {
         HStack {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
+            if title != "" {
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
             Text(value)
                 .font(.caption)
                 .fontWeight(.semibold)

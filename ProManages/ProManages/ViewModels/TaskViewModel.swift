@@ -7,19 +7,51 @@
 
 
 import SwiftUI
+import FirebaseFirestore
 
 class TaskViewModel: ObservableObject {
-    @Published var tasks: [Task] = []
+    @Published var tasks: [Taskis] = []
+    @Published var projects: [Project] = []
 
-    init() {
-        loadTasks()
+    private var db = Firestore.firestore()
+
+    func fetchTasks() {
+        db.collection("tasks").getDocuments { snapshot, error in
+            if let error = error {
+                print("Error fetching tasks: \(error.localizedDescription)")
+                return
+            }
+            self.tasks = snapshot?.documents.compactMap { document in
+                try? document.data(as: Taskis.self)
+            } ?? []
+        }
     }
 
-    func loadTasks() {
-        self.tasks = [
-            Task(id: UUID(), title: "Задача 1", description: "Описание задачи 1", project: Project(id: UUID(), title: "Проект А", description: "Описание проекта А", tasks: []), type: .urgent, difficulty: .medium, importance: .high, startTime: Date(), endTime: Date().addingTimeInterval(3600)),
-            Task(id: UUID(), title: "Задача 2", description: "Описание задачи 2", project: Project(id: UUID(), title: "Проект B", description: "Описание проекта B", tasks: []), type: .nonUrgent, difficulty: .easy, importance: .low, startTime: Date(), endTime: Date().addingTimeInterval(7200))
-        ]
+    func addTask(_ task: Taskis) {
+        do {
+            _ = try db.collection("tasks").addDocument(from: task)
+        } catch let error {
+            print("Error adding task: \(error.localizedDescription)")
+        }
+    }
+
+    func updateTask(_ task: Taskis) {
+        if let taskID = task.id {
+            do {
+                try db.collection("tasks").document(taskID.uuidString).setData(from: task)
+            } catch let error {
+                print("Error updating task: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    func deleteTask(_ task: Taskis) {
+        if let taskID = task.id {
+            db.collection("tasks").document(taskID.uuidString).delete { error in
+                if let error = error {
+                    print("Error deleting task: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 }
-

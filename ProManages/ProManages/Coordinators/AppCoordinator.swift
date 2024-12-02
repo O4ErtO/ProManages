@@ -9,7 +9,7 @@ import Foundation
 
 enum Route {
     case showTask(Project)
-    case taskDetails(Task)
+    case taskDetails(Taskis)
     case statistic
 }
 

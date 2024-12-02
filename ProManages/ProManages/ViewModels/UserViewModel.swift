@@ -11,6 +11,6 @@ import SwiftUI
 class UserViewModel: ObservableObject {
     @Published var users: [User] = []
     
-    func assignTask(_ task: Task, to user: User) {
+    func assignTask(_ task: Taskis, to user: User) {
     }
 }

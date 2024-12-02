@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct ProjectListSideBarView: View {
-    @StateObject var projectViewModel = ProjectViewModel()
+    @ObservedObject var projectViewModel = ProjectViewModel()
     @EnvironmentObject private var appState: AppState
 
     var body: some View {
@@ -19,6 +19,11 @@ struct ProjectListSideBarView: View {
             }
             .listStyle(SidebarListStyle())
             .navigationTitle("Projects")
+            .onAppear {
+                if appState.currentRoute == nil, let firstProject = projectViewModel.projects.first {
+                    appState.push(.showTask(firstProject))
+                }
+            }
 
             if let currentRoute = appState.currentRoute {
                 switch currentRoute {

@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FA9933382CFE3B4D0032AFB9 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FA9933372CFE3B4D0032AFB9 /* FirebaseAuth */; };
+		FA99333A2CFE3B4E0032AFB9 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FA9933392CFE3B4E0032AFB9 /* FirebaseFirestore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		FA1D9E242CDD5A94006D13B5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +34,22 @@
 		FA1D9E2D2CDD5A94006D13B5 /* ProManagesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProManagesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FA99333C2CFE3C250032AFB9 /* Exceptions for "ProManages" folder in "ProManages" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = FA1D9E0F2CDD5A91006D13B5 /* ProManages */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FA1D9E122CDD5A91006D13B5 /* ProManages */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FA99333C2CFE3C250032AFB9 /* Exceptions for "ProManages" folder in "ProManages" target */,
+			);
 			path = ProManages;
 			sourceTree = "<group>";
 		};
@@ -52,6 +70,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA9933382CFE3B4D0032AFB9 /* FirebaseAuth in Frameworks */,
+				FA99333A2CFE3B4E0032AFB9 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +132,8 @@
 			);
 			name = ProManages;
 			packageProductDependencies = (
+				FA9933372CFE3B4D0032AFB9 /* FirebaseAuth */,
+				FA9933392CFE3B4E0032AFB9 /* FirebaseFirestore */,
 			);
 			productName = ProManages;
 			productReference = FA1D9E102CDD5A91006D13B5 /* ProManages.app */;
@@ -195,6 +217,9 @@
 			);
 			mainGroup = FA1D9E072CDD5A91006D13B5;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FA9933362CFE3B4D0032AFB9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FA1D9E112CDD5A91006D13B5 /* Products */;
 			projectDirPath = "";
@@ -401,6 +426,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"ProManages/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ProManages/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -427,6 +453,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"ProManages/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ProManages/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -545,6 +572,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FA9933362CFE3B4D0032AFB9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FA9933372CFE3B4D0032AFB9 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA9933362CFE3B4D0032AFB9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		FA9933392CFE3B4E0032AFB9 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA9933362CFE3B4D0032AFB9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FA1D9E082CDD5A91006D13B5 /* Project object */;
 }
