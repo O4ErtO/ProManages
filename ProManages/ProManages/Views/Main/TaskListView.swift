@@ -11,55 +11,69 @@ struct TaskListView: View {
     @StateObject var taskViewModel = TaskViewModel()
     @StateObject var projectViewModel = ProjectViewModel()
     @EnvironmentObject private var appState: AppState
-    @State private var selectedProject: Project?
     @State private var showingTaskSheet = false
     @State private var editingTask: Taskis? = nil
+    @State private var isLoading = false // State for loader
+    @State var selectedProject: Project
 
     var body: some View {
-        List(taskViewModel.tasks.filter { $0.projectId == selectedProject?.id }) { task in
-            TaskRowView(task: task, onEdit: {
-                editingTask = task
-                showingTaskSheet = true
-            }, onDelete: {
-                Task {
-                    await taskViewModel.deleteTask(task)
+        ZStack {
+            if isLoading {
+                ProgressView("")
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .scaleEffect(2)
+            } else {
+                List(taskViewModel.tasks.filter { $0.projectId == selectedProject.id }) { task in
+                    TaskRowView(task: task, onEdit: {
+                        editingTask = task
+                        showingTaskSheet = true
+                    }, onDelete: {
+                        Task {
+                            await taskViewModel.deleteTask(task)
+                        }
+                    })
+                    .onTapGesture {
+                        appState.push(.taskDetails(task))
+                    }
                 }
-            })
-            .onTapGesture {
-                appState.push(.taskDetails(task))
+                .scrollContentBackground(.hidden)
+                .gradientBackground()
+                .navigationTitle(selectedProject.title ?? "Tasks")
+                .toolbar {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button(action: {
+                            editingTask = nil
+                            showingTaskSheet = true
+                        }) {
+                            Label("Создать задачу", systemImage: "plus")
+                        }
+                    }
+                }
+                .sheet(isPresented: $showingTaskSheet) {
+                    TaskView(task: editingTask)
+                        .environmentObject(taskViewModel)
+                        .environmentObject(projectViewModel)
+                }
+                .gradientBackground()
             }
         }
-        .scrollContentBackground(.hidden)
-        .gradientBackground()
-        .navigationTitle(selectedProject?.title ?? "Tasks")
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button(action: {
-                    editingTask = nil
-                    showingTaskSheet = true
-                }) {
-                    Label("Создать задачу", systemImage: "plus")
-                }
-            }
-        }
-        .sheet(isPresented: $showingTaskSheet) {
-            TaskView(task: editingTask)
-                .environmentObject(taskViewModel)
-                .environmentObject(projectViewModel)
-        }
-        .gradientBackground()
         .onAppear {
-            Task {
-                await taskViewModel.fetchTasks()
-                await projectViewModel.fetchProjects()
-                if let firstProject = projectViewModel.projects.first {
-                    selectedProject = firstProject
-                }
-            }
+            loadTasks()
         }
         .onChange(of: appState.currentRoute) { newValue in
             if case let .showTask(project) = newValue {
                 selectedProject = project
+                loadTasks()
+            }
+        }
+    }
+
+    private func loadTasks() {
+        isLoading = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            Task {
+                await taskViewModel.fetchTasks(for: selectedProject)
+                isLoading = false
             }
         }
     }
