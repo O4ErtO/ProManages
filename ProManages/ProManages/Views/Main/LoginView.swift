@@ -49,7 +49,7 @@ struct LoginView: View {
                     .disableAutocorrection(true)
 
                 GradientButton(
-                    action: loginAction,  
+                    action: loginAction,
                     title: "Вход"
                 )
                 .padding(.horizontal, 30)
@@ -68,14 +68,14 @@ struct LoginView: View {
             RegistrationView(viewModel: RegistrationViewModel())
         }
         .alert(isPresented: $showError) {
-            Alert(title: Text("Ошибка"), message: Text("Неверное имя пользователя или пароль"), dismissButton: .default(Text("Ок")))
+            Alert(title: Text("Ошибка"), message: Text(authViewModel.errorMessage ?? "Неизвестная ошибка"), dismissButton: .default(Text("Ок")))
         }
     }
 
     func loginAction() {
         Task {
             do {
-                let success = try await authViewModel.performLogin() // Добавляем try для обработки ошибок
+                let success = try await authViewModel.performLogin()
                 if !success {
                     showError = true
                 }
@@ -84,5 +84,4 @@ struct LoginView: View {
             }
         }
     }
-
 }

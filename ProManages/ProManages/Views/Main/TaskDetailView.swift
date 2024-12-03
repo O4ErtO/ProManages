@@ -10,9 +10,11 @@ import SwiftUI
 struct TaskDetailView: View {
     @StateObject private var viewModel: TaskDetailViewModel
     @EnvironmentObject private var appState: AppState
+    private var project: String
 
-    init(task: Taskis) {
+    init(task: Taskis, project: String) {
         _viewModel = StateObject(wrappedValue: TaskDetailViewModel(task: task))
+        self.project = project
     }
 
     var body: some View {
@@ -35,12 +37,17 @@ struct TaskDetailView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             Spacer()
-            ProjectInfoView(viewModel: viewModel)
+            ProjectInfoView(viewModel: viewModel, projectName: project)
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .toolbar {
             ToolbarItem(placement: .navigation) {
                 CustomBackButton(action: { appState.pop() })
+            }
+        }
+        .onDisappear {
+            Task {
+                await viewModel.updateTaskTime()
             }
         }
     }

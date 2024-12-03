@@ -10,9 +10,10 @@ import SwiftUI
 
 struct ProjectInfoView: View {
     @ObservedObject var viewModel: TaskDetailViewModel
-    
+    var projectName: String?
+
     let states = [TaskState.open, TaskState.inProgress, TaskState.completed, TaskState.onHold]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -20,51 +21,50 @@ struct ProjectInfoView: View {
                     .font(.title2)
                     .foregroundColor(.primary)
                 Spacer()
-                Image("project_icon")
+                Image(systemName: "folder") // Используем системную иконку, если нет изображения
                     .resizable()
                     .frame(width: 32, height: 32)
             }
-            
-            Text(viewModel.task.project?.title ?? "Нет проекта")
-                .font(.largeTitle)
-                .bold()
-            
+
+                Text(projectName ?? "Нет проекта")
+                    .font(.largeTitle)
+                    .bold()
+
             Divider()
-            
+
             sectionRow(title: "Приоритет", content: viewModel.task.importance.rawValue, colorIndicator: viewModel.task.importance == .low ? Color.green : Color.red)
-        
+
             sectionRow(title: "Тип", content: viewModel.task.type.rawValue)
-            
+
             sectionRow(title: "Сложность", content: viewModel.task.difficulty.rawValue)
-            
+
             statePickerRow()
-            
+
             HStack {
                 Text("Исполнитель")
                     .font(.headline)
                     .foregroundColor(.primary)
                 Spacer()
                 HStack(spacing: 12) {
-                    Image("default_image")
+                    Image(systemName: "person.circle") // Используем системную иконку, если нет изображения
                         .resizable()
                         .frame(width: 40, height: 40)
                         .clipShape(Circle())
-                    Text(viewModel.task.assignedUser?.username ?? "Нет исполнителя")
+                    Text("Нет исполнителя")
                         .font(.headline)
                 }
             }
-            
+
             sectionRow(title: "Оценка времени", content: viewModel.task.difficulty.rawValue)
-            
+
             sectionRow(title: "Затраченное время", content: formatTimeInterval(viewModel.elapsedTime))
-            
+
             Spacer()
-            
         }
         .padding(16)
         .background(.clear)
     }
-    
+
     private func sectionRow(title: String, content: String, colorIndicator: Color? = nil) -> some View {
         HStack {
             Text(title)
@@ -85,8 +85,7 @@ struct ProjectInfoView: View {
             }
         }
     }
-    
-    
+
     private func statePickerRow() -> some View {
         HStack {
             Text("Состояние")
@@ -111,8 +110,7 @@ struct ProjectInfoView: View {
             .foregroundColor(.primary)
         }
     }
-    
-    
+
     private func formatTimeInterval(_ interval: TimeInterval) -> String {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import Supabase
 
 class TaskDetailViewModel: ObservableObject {
     @Published var task: Taskis
@@ -33,7 +34,7 @@ class TaskDetailViewModel: ObservableObject {
         timer = Timer.publish(every: 1, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
-                self?.objectWillChange.send() 
+                self?.objectWillChange.send()
             }
     }
 
@@ -42,7 +43,7 @@ class TaskDetailViewModel: ObservableObject {
         timer?.cancel()
         timer = nil
     }
-    
+
     func stateColor(for state: TaskState) -> Color {
         switch state {
         case .open: return .blue
@@ -51,7 +52,7 @@ class TaskDetailViewModel: ObservableObject {
         case .onHold: return .yellow
         }
     }
-    
+
     private func updateTimer() {
         // Если потребуется дополнительная логика обновления
     }
@@ -62,6 +63,45 @@ class TaskDetailViewModel: ObservableObject {
             startTimer()
         } else {
             stopTimer()
+        }
+    }
+
+    func updateTaskTime() async {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+        // Фетчинг затраченного времени
+        let startTime = formatter.date(from: task.startTime) ?? Date()
+        let endTime = formatter.date(from: task.endTime) ?? Date()
+        let elapsedTime = endTime.timeIntervalSince(startTime)
+
+        // Обновление даты окончания
+        let updatedEndTime = Date().addingTimeInterval(elapsedTime)
+
+        let updatedTask = Taskis(
+            id: task.id,
+            title: task.title,
+            description: task.description,
+            projectId: task.projectId,
+            assignedUserId: task.assignedUserId,
+            type: task.type,
+            difficulty: task.difficulty,
+            importance: task.importance,
+            startTime: formatter.string(from: startTime),
+            endTime: formatter.string(from: updatedEndTime),
+            state: task.state
+        )
+
+        do {
+            try await SupabaseClients.shared.client.database.from("tasks")
+                .update(updatedTask.asDictionary)
+                .eq("id", value: updatedTask.id)
+                .execute()
+            DispatchQueue.main.async {
+                self.task = updatedTask
+            }
+        } catch {
+            print("Error updating task time: \(error)")
         }
     }
 }

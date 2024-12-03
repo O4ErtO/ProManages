@@ -11,6 +11,7 @@ struct User: Codable, Identifiable, Hashable, Equatable {
     var id: String
     var email: String
     var username: String
+    var password: String
     var role: Role
 
     static func == (lhs: User, rhs: User) -> Bool {

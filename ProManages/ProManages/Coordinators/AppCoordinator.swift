@@ -7,11 +7,27 @@
 
 import Foundation
 
-enum Route {
+import Foundation
+
+enum Route: Codable, Equatable {
     case showTask(Project)
     case taskDetails(Taskis)
     case statistic
+
+    static func == (lhs: Route, rhs: Route) -> Bool {
+        switch (lhs, rhs) {
+        case let (.showTask(lhsProject), .showTask(rhsProject)):
+            return lhsProject.id == rhsProject.id
+        case let (.taskDetails(lhsTask), .taskDetails(rhsTask)):
+            return lhsTask.id == rhsTask.id
+        case (.statistic, .statistic):
+            return true
+        default:
+            return false
+        }
+    }
 }
+
 
 class AppState: ObservableObject {
     @Published var routes: [Route] = []

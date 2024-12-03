@@ -7,16 +7,16 @@ import Foundation
 import SwiftUI
 
 struct Taskis: Identifiable, Codable, Hashable, Equatable {
-    var id: UUID? = UUID()
+    var id: UUID
     var title: String
     var description: String
-    var project: Project?
-    var assignedUser: User?
+    var projectId: UUID // Используем projectId вместо Project
+    var assignedUserId: UUID // Используем assignedUserId вместо User
     var type: TaskType
     var difficulty: TaskDifficulty
     var importance: TaskImportance
-    var startTime: Date?
-    var endTime: Date?
+    var startTime: String
+    var endTime: String
     var state: TaskState
 
     var urgencyColor: Color {
@@ -39,13 +39,13 @@ struct Taskis: Identifiable, Codable, Hashable, Equatable {
         case id
         case title
         case description
-        case project
-        case assignedUser
+        case projectId = "project_id"
+        case assignedUserId = "assigned_user_id"
         case type
         case difficulty
         case importance
-        case startTime
-        case endTime
+        case startTime = "start_time"
+        case endTime = "end_time"
         case state
     }
 
@@ -61,7 +61,6 @@ struct Taskis: Identifiable, Codable, Hashable, Equatable {
         hasher.combine(description)
     }
 }
-
 
 enum TaskType: String, Codable {
     case urgent = "Срочная"

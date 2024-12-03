@@ -3,41 +3,55 @@
 //
 
 
-import SwiftUI
-import FirebaseAuth
+import Foundation
+import Combine
+import Supabase
 
 class AuthViewModel: ObservableObject {
-    @Published var user: User? = nil
     @Published var login: String = ""
     @Published var password: String = ""
+    @Published var user: User? = nil
+    @Published var errorMessage: String? = nil
 
-    func performLogin() async -> Bool {
+    private var cancellables = Set<AnyCancellable>()
+    private let supabaseClient = SupabaseClients.shared.client
+
+    func performLogin() async throws -> Bool {
         do {
-            let authResult = try await Auth.auth().signIn(withEmail: login, password: password)
-            let firebaseUser = authResult.user
+            let response = try await supabaseClient.auth.signIn(email: login, password: password)
+            let users = response.user
+            DispatchQueue.main.async {
+                self.user = User(id: users.id.uuidString, email: users.email ?? "", username: users.userMetadata["username"] as? String ?? "", password: self.user?.password ?? "", role: .worker)
+                UserDefaults.standard.set(users.id.uuidString, forKey: "userId")
 
-            let role: Role = (login == "admin@example.com") ? .admin : .worker
-
-            self.user = User(
-                id: firebaseUser.uid,
-                email: firebaseUser.email ?? "",
-                username: firebaseUser.displayName ?? "No Name",
-                role: role
-            )
-
+            }
             return true
-        } catch {
-            print("Ошибка авторизации: \(error.localizedDescription)")
-            return false
+        } catch let error as NSError {
+            if error.code == 400 {
+                DispatchQueue.main.async {
+                    self.errorMessage = "Неверные учетные данные. Пожалуйста, проверьте свой логин и пароль."
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.errorMessage = "Не удалось выполнить вход: \(error.localizedDescription)"
+                }
+            }
+            throw error
         }
     }
 
     func logout() {
-        do {
-            try Auth.auth().signOut()
-            self.user = nil
-        } catch let signOutError as NSError {
-            print("Ошибка выхода: \(signOutError.localizedDescription)")
+        Task {
+            do {
+                try await supabaseClient.auth.signOut()
+                DispatchQueue.main.async {
+                    self.user = nil
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.errorMessage = "Не удалось выполнить выход: \(error.localizedDescription)"
+                }
+            }
         }
     }
 }

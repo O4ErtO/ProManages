@@ -4,6 +4,7 @@
 // Created by Artem Vekshin on 18.11.2024.
 //
 
+
 import SwiftUI
 
 struct TaskView: View {
@@ -13,6 +14,9 @@ struct TaskView: View {
     @State private var selectedDifficulty: TaskDifficulty
     @State private var selectedImportance: TaskImportance
     @State private var selectedProject: Project?
+
+    @State private var newProjectTitle: String = ""
+    @State private var isCreatingNewProject: Bool = false
 
     @EnvironmentObject var taskViewModel: TaskViewModel
     @Environment(\.presentationMode) var presentationMode
@@ -29,7 +33,7 @@ struct TaskView: View {
         _selectedType = State(initialValue: task?.type ?? .urgent)
         _selectedDifficulty = State(initialValue: task?.difficulty ?? .medium)
         _selectedImportance = State(initialValue: task?.importance ?? .high)
-        _selectedProject = State(initialValue: task?.project)
+        _selectedProject = State(initialValue: nil) // Initialize to nil, will be set in onAppear
     }
 
     var body: some View {
@@ -38,21 +42,22 @@ struct TaskView: View {
                 TextField("Название задачи", text: $title)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding(.vertical, 4)
-
-                TextEditor(text: $description)
-                    .frame(height: 100)
-                    .border(Color.gray, width: 1)
+                TextField("Описание задачи", text: $description)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding(.vertical, 4)
             }
 
             Section(header: Text("Проект").font(.headline)) {
-                Picker("Проект", selection: $selectedProject) {
-                    ForEach(taskViewModel.projects, id: \.id) { project in
-                        Text(project.title).tag(project as Project?)
+                if isCreatingNewProject {
+                    TextField("Название нового проекта", text: $newProjectTitle)
+                } else {
+                    Picker("Выберите проект", selection: $selectedProject) {
+                        ForEach(taskViewModel.projects, id: \.id) { project in
+                            Text(project.title).tag(project as Project?)
+                        }
                     }
                 }
-                .pickerStyle(MenuPickerStyle())
-                .padding(.vertical, 4)
+                Toggle("Создать новый проект", isOn: $isCreatingNewProject)
             }
 
             Section(header: Text("Тип задачи").font(.headline)) {
@@ -85,33 +90,7 @@ struct TaskView: View {
             }
 
             GradientButton(action: {
-                if isEditing {
-                    if var editedTask = task {
-                        editedTask.title = title
-                        editedTask.description = description
-                        editedTask.type = selectedType
-                        editedTask.difficulty = selectedDifficulty
-                        editedTask.importance = selectedImportance
-                        editedTask.project = selectedProject
-                        taskViewModel.updateTask(editedTask)
-                    }
-                } else {
-                    let newTask = Taskis(
-                        id: UUID(),
-                        title: title,
-                        description: description,
-                        project: selectedProject,
-                        assignedUser: nil,
-                        type: selectedType,
-                        difficulty: selectedDifficulty,
-                        importance: selectedImportance,
-                        startTime: Date(),
-                        endTime: Date().addingTimeInterval(3600),
-                        state: .open
-                    )
-                    taskViewModel.tasks.append(newTask)
-                }
-                presentationMode.wrappedValue.dismiss()
+                saveTask()
             }, title: isEditing ? "Сохранить изменения" : "Создать задачу")
             .padding(.vertical, 16)
         }
@@ -121,12 +100,50 @@ struct TaskView: View {
         .cornerRadius(10)
         .shadow(radius: 5)
         .padding()
+        .onAppear {
+            Task {
+                await taskViewModel.fetchProjects()
+                if let task = task {
+                    selectedProject = taskViewModel.projects.first { $0.id == task.projectId }
+                }
+            }
+        }
     }
-}
 
-struct TaskView_Previews: PreviewProvider {
-    static var previews: some View {
-        TaskView()
-            .environmentObject(TaskViewModel())
+    private func saveTask() {
+        Task {
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+            // Получаем идентификатор пользователя из UserDefaults
+            let userId = UUID(uuidString: UserDefaults.standard.string(forKey: "userId") ?? "") ?? UUID()
+
+            let newTask = Taskis(
+                id: task?.id ?? UUID(),
+                title: title,
+                description: description,
+                projectId: selectedProject?.id ?? UUID(),
+                assignedUserId: userId,
+                type: selectedType,
+                difficulty: selectedDifficulty,
+                importance: selectedImportance,
+                startTime: formatter.string(from: Date()),
+                endTime: formatter.string(from: Date().addingTimeInterval(3600)),
+                state: task?.state ?? .open
+            )
+
+            if isCreatingNewProject {
+                let newProject = Project(id: UUID(), title: newProjectTitle, description: "")
+                await taskViewModel.addProject(newProject)
+                selectedProject = newProject
+            }
+
+            if isEditing {
+                await taskViewModel.updateTask(newTask)
+            } else {
+                await taskViewModel.addTask(newTask)
+            }
+            presentationMode.wrappedValue.dismiss()
+        }
     }
 }

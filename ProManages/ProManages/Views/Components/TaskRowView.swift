@@ -32,7 +32,7 @@ struct TaskRowView: View {
                     .padding(.vertical, 2)
 
                 HStack(spacing: 8) {
-                    TaskAttributeView(title: "", value: task.type.rawValue, color: nil)
+                    TaskAttributeView(title: "", value: task.state.rawValue, color: nil)
                         .padding(6)
                         .background(.purple)
                         .cornerRadius(14)
@@ -40,9 +40,6 @@ struct TaskRowView: View {
                     TaskAttributeView(title: "Сложность", value: task.difficulty.rawValue, color: task.difficultyColor)
                     TaskAttributeView(title: "Срочность", value: task.importance.rawValue, color: task.urgencyColor)
 
-                    if let project = task.project {
-                        TaskAttributeView(title: "Проект", value: project.title, color: nil)
-                    }
                 }
                 .font(.caption)
                 .foregroundColor(.secondary)

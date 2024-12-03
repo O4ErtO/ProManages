@@ -7,8 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FA9933382CFE3B4D0032AFB9 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FA9933372CFE3B4D0032AFB9 /* FirebaseAuth */; };
-		FA99333A2CFE3B4E0032AFB9 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FA9933392CFE3B4E0032AFB9 /* FirebaseFirestore */; };
+		FA9933612CFF240C0032AFB9 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = FA9933602CFF240C0032AFB9 /* Auth */; };
+		FA9933632CFF240C0032AFB9 /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = FA9933622CFF240C0032AFB9 /* Functions */; };
+		FA9933652CFF240C0032AFB9 /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = FA9933642CFF240C0032AFB9 /* PostgREST */; };
+		FA9933672CFF240C0032AFB9 /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = FA9933662CFF240C0032AFB9 /* Realtime */; };
+		FA9933692CFF240C0032AFB9 /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = FA9933682CFF240C0032AFB9 /* Storage */; };
+		FA99336B2CFF240C0032AFB9 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = FA99336A2CFF240C0032AFB9 /* Supabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,8 +74,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA9933382CFE3B4D0032AFB9 /* FirebaseAuth in Frameworks */,
-				FA99333A2CFE3B4E0032AFB9 /* FirebaseFirestore in Frameworks */,
+				FA9933652CFF240C0032AFB9 /* PostgREST in Frameworks */,
+				FA9933632CFF240C0032AFB9 /* Functions in Frameworks */,
+				FA99336B2CFF240C0032AFB9 /* Supabase in Frameworks */,
+				FA9933612CFF240C0032AFB9 /* Auth in Frameworks */,
+				FA9933692CFF240C0032AFB9 /* Storage in Frameworks */,
+				FA9933672CFF240C0032AFB9 /* Realtime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,8 +140,12 @@
 			);
 			name = ProManages;
 			packageProductDependencies = (
-				FA9933372CFE3B4D0032AFB9 /* FirebaseAuth */,
-				FA9933392CFE3B4E0032AFB9 /* FirebaseFirestore */,
+				FA9933602CFF240C0032AFB9 /* Auth */,
+				FA9933622CFF240C0032AFB9 /* Functions */,
+				FA9933642CFF240C0032AFB9 /* PostgREST */,
+				FA9933662CFF240C0032AFB9 /* Realtime */,
+				FA9933682CFF240C0032AFB9 /* Storage */,
+				FA99336A2CFF240C0032AFB9 /* Supabase */,
 			);
 			productName = ProManages;
 			productReference = FA1D9E102CDD5A91006D13B5 /* ProManages.app */;
@@ -218,7 +230,7 @@
 			mainGroup = FA1D9E072CDD5A91006D13B5;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				FA9933362CFE3B4D0032AFB9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				FA99335F2CFF240C0032AFB9 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FA1D9E112CDD5A91006D13B5 /* Products */;
@@ -574,26 +586,46 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		FA9933362CFE3B4D0032AFB9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+		FA99335F2CFF240C0032AFB9 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			repositoryURL = "https://github.com/supabase-community/supabase-swift";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 11.5.0;
+				minimumVersion = 2.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		FA9933372CFE3B4D0032AFB9 /* FirebaseAuth */ = {
+		FA9933602CFF240C0032AFB9 /* Auth */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = FA9933362CFE3B4D0032AFB9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAuth;
+			package = FA99335F2CFF240C0032AFB9 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
 		};
-		FA9933392CFE3B4E0032AFB9 /* FirebaseFirestore */ = {
+		FA9933622CFF240C0032AFB9 /* Functions */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = FA9933362CFE3B4D0032AFB9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestore;
+			package = FA99335F2CFF240C0032AFB9 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		FA9933642CFF240C0032AFB9 /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA99335F2CFF240C0032AFB9 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		FA9933662CFF240C0032AFB9 /* Realtime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA99335F2CFF240C0032AFB9 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Realtime;
+		};
+		FA9933682CFF240C0032AFB9 /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA99335F2CFF240C0032AFB9 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		FA99336A2CFF240C0032AFB9 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA99335F2CFF240C0032AFB9 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

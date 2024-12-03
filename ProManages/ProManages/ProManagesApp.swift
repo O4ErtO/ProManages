@@ -7,8 +7,6 @@
 
 import SwiftUI
 import SwiftData
-import Firebase
-import FirebaseCore
 
 
 @main
@@ -16,10 +14,7 @@ struct ProManagesApp: App {
     @StateObject private var authViewModel = AuthViewModel()
     @StateObject private var appState = AppState()
     
-    init() {
-        FirebaseApp.configure()
-    }
-
+    
     var body: some Scene {
         WindowGroup {
             MainView()
