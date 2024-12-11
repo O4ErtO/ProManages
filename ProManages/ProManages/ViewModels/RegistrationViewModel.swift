@@ -8,9 +8,6 @@
 import Foundation
 import Combine
 import Supabase
-import Foundation
-import Combine
-import Supabase
 
 class RegistrationViewModel: ObservableObject {
     @Published var username: String = ""

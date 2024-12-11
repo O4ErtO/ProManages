@@ -19,7 +19,7 @@ class TaskViewModel: ObservableObject {
         do {
             let response: PostgrestResponse<[Taskis]> = try await supabaseClient.database.from("tasks").select().eq("project_id", value: project.id.uuidString).execute()
             DispatchQueue.main.async {
-                self.tasks = response.value ?? []
+                self.tasks = response.value
             }
         } catch {
             print("Error fetching tasks: \(error)")
@@ -30,7 +30,7 @@ class TaskViewModel: ObservableObject {
         do {
             let response: PostgrestResponse<[Project]> = try await supabaseClient.database.from("projects").select().execute()
             DispatchQueue.main.async {
-                self.projects = response.value ?? []
+                self.projects = response.value
             }
         } catch {
             print("Error fetching projects: \(error)")

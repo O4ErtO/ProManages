@@ -27,7 +27,7 @@ struct LoginView: View {
                     .shadow(radius: 10)
 
                 TextField("", text: $authViewModel.login)
-                    .placeholder("Имя пользователя", when: authViewModel.login.isEmpty)
+                    .placeholder("E-mail", when: authViewModel.login.isEmpty)
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 10)
                                     .fill(Color.white.opacity(0.8)))

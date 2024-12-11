@@ -16,14 +16,19 @@ class AuthViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let supabaseClient = SupabaseClients.shared.client
 
+    init() {
+        loadUser()
+    }
+
     func performLogin() async throws -> Bool {
         do {
             let response = try await supabaseClient.auth.signIn(email: login, password: password)
-            let users = response.user
+            let authUser = response.user
+            let profile = try await getProfile(for: authUser)
+            let userModel = User(id: authUser.id.uuidString, email: authUser.email ?? "", username: profile.username ?? "", password: "", role: Role(rawValue: profile.role ?? "worker") ?? .worker)
             DispatchQueue.main.async {
-                self.user = User(id: users.id.uuidString, email: users.email ?? "", username: users.userMetadata["username"] as? String ?? "", password: self.user?.password ?? "", role: .worker)
-                UserDefaults.standard.set(users.id.uuidString, forKey: "userId")
-
+                self.user = userModel
+                UserManager.shared.currentUser = userModel
             }
             return true
         } catch let error as NSError {
@@ -46,6 +51,7 @@ class AuthViewModel: ObservableObject {
                 try await supabaseClient.auth.signOut()
                 DispatchQueue.main.async {
                     self.user = nil
+                    UserManager.shared.currentUser = nil
                 }
             } catch {
                 DispatchQueue.main.async {
@@ -53,5 +59,17 @@ class AuthViewModel: ObservableObject {
                 }
             }
         }
+    }
+
+    private func loadUser() {
+        self.user = UserManager.shared.currentUser
+    }
+
+    private func getProfile(for user: Auth.User) async throws -> Profile {
+        let response: PostgrestResponse<[Profile]> = try await supabaseClient.database.from("users").select().eq("id", value: user.id.uuidString).execute()
+        guard let profile = response.value.first else {
+            throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Profile not found"])
+        }
+        return profile
     }
 }

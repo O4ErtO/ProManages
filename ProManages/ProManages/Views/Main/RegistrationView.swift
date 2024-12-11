@@ -99,6 +99,7 @@ struct RegistrationView: View {
                         .shadow(radius: 5)
                 }
                 .padding(.horizontal, 30)
+                .buttonStyle(.plain)
                 .alert(isPresented: $viewModel.showAlert) {
                     Alert(title: Text("Ошибка"), message: Text(viewModel.alertMessage), dismissButton: .default(Text("ОК")))
                 }

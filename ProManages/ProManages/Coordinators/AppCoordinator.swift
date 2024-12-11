@@ -29,11 +29,29 @@ enum Route: Codable, Equatable {
 }
 
 
+import SwiftUI
+
 class AppState: ObservableObject {
     @Published var routes: [Route] = []
+    @Published var currentUser: User?
 
     var currentRoute: Route? {
         routes.last
+    }
+
+    private var userObserver: NSObjectProtocol?
+
+    init() {
+        loadUser()
+        userObserver = NotificationCenter.default.addObserver(forName: .userDidChange, object: nil, queue: .main) { [weak self] _ in
+            self?.loadUser()
+        }
+    }
+
+    deinit {
+        if let observer = userObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
 
     func push(_ route: Route) {
@@ -43,5 +61,9 @@ class AppState: ObservableObject {
     @discardableResult
     func pop() -> Route? {
         routes.popLast()
+    }
+
+    private func loadUser() {
+        self.currentUser = UserManager.shared.currentUser
     }
 }
