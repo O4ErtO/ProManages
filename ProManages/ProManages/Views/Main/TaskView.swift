@@ -33,7 +33,7 @@ struct TaskView: View {
         _selectedType = State(initialValue: task?.type ?? .urgent)
         _selectedDifficulty = State(initialValue: task?.difficulty ?? .medium)
         _selectedImportance = State(initialValue: task?.importance ?? .high)
-        _selectedProject = State(initialValue: nil) // Initialize to nil, will be set in onAppear
+        _selectedProject = State(initialValue: nil)
     }
 
     var body: some View {
