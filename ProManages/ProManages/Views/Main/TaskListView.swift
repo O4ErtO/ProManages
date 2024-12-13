@@ -15,7 +15,6 @@ struct TaskListView: View {
     @State private var editingTask: Taskis? = nil
     @State private var isLoading = false
     @State var selectedProject: Project
-    @State private var searchQuery: String = ""
 
     var body: some View {
         ZStack {
@@ -24,47 +23,41 @@ struct TaskListView: View {
                     .progressViewStyle(CircularProgressViewStyle())
                     .scaleEffect(2)
             } else {
-                VStack {
-                    TextField("Поиск задачи...", text: $searchQuery)
-                        .padding(7)
-                        .cornerRadius(8)
-                        .padding(.horizontal, 10)
-
-                    List(taskViewModel.tasks.filter { $0.projectId == selectedProject.id && (searchQuery.isEmpty || $0.title.localizedCaseInsensitiveContains(searchQuery)) }) { task in
-                        TaskRowView(task: task, onEdit: {
-                            editingTask = task
-                            showingTaskSheet = true
-                        }, onDelete: {
-                            Task {
-                                await taskViewModel.deleteTask(task)
-                            }
-                        })
-                        .onTapGesture {
-                            appState.push(.taskDetails(task))
+                List(taskViewModel.tasks.filter { $0.projectId == selectedProject.id }) { task in
+                    TaskRowView(task: task, onEdit: {
+                        editingTask = task
+                        showingTaskSheet = true
+                    }, onDelete: {
+                        Task {
+                            await taskViewModel.deleteTask(task)
                         }
+                    })
+                    .onTapGesture {
+                        appState.push(.taskDetails(task))
                     }
-                    .scrollContentBackground(.hidden)
-                    .gradientBackground()
-                    .navigationTitle(selectedProject.title)
-                    .toolbar {
-                        if appState.currentUser?.role == .admin {
-                            ToolbarItem(placement: .primaryAction) {
-                                Button(action: {
-                                    editingTask = nil
-                                    showingTaskSheet = true
-                                }) {
-                                    Label("Создать задачу", systemImage: "plus")
-                                }
-                            }
-                        }
-                    }
-                    .sheet(isPresented: $showingTaskSheet) {
-                        TaskView(task: editingTask)
-                            .environmentObject(taskViewModel)
-                            .environmentObject(projectViewModel)
-                    }
-                    .gradientBackground()
                 }
+                
+                .scrollContentBackground(.hidden)
+                .gradientBackground()
+                .navigationTitle(selectedProject.title)
+                .toolbar {
+                    if appState.currentUser?.role == .admin {
+                        ToolbarItem(placement: .primaryAction) {
+                            Button(action: {
+                                editingTask = nil
+                                showingTaskSheet = true
+                            }) {
+                                Label("Создать задачу", systemImage: "plus")
+                            }
+                        }
+                    }
+                }
+                .sheet(isPresented: $showingTaskSheet) {
+                    TaskView(task: editingTask)
+                        .environmentObject(taskViewModel)
+                        .environmentObject(projectViewModel)
+                }
+                .gradientBackground()
             }
         }
         .onAppear {
